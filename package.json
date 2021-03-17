@@ -1,6 +1,6 @@
 {
     "name": "Commits",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "description": "Track & show commits in obsidian vault or specified project.",
     "author": "darakah",
     "main": "main.js",
