@@ -1,0 +1,9 @@
+.commits-container {
+    background-color: var(--color-bg-primary);
+    border: 1px solid transparent !important;
+    border-radius: 6px;
+    width: 49%;
+    height: 100%;
+    padding: 0px;
+    padding-right: 15px;
+}
