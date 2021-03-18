@@ -4890,7 +4890,7 @@ function create_fragment(ctx) {
 	let b0;
 	let t0;
 	let t1;
-	let t2_value = /*data*/ ctx[1]["Created"]?.length + "";
+	let t2_value = /*data*/ ctx[1]["Created"]?.filter(unique).length + "";
 	let t2;
 	let t3;
 	let br0;
@@ -4898,7 +4898,7 @@ function create_fragment(ctx) {
 	let b1;
 	let t5;
 	let t6;
-	let t7_value = /*data*/ ctx[1]["Deleted"]?.length + "";
+	let t7_value = /*data*/ ctx[1]["Deleted"]?.filter(unique).length + "";
 	let t7;
 	let t8;
 	let html_tag;
@@ -4909,7 +4909,7 @@ function create_fragment(ctx) {
 	let b2;
 	let t11;
 	let t12;
-	let t13_value = /*data*/ ctx[1]["Renamed"]?.length + "";
+	let t13_value = /*data*/ ctx[1]["Renamed"]?.filter(unique).length + "";
 	let t13;
 	let t14;
 	let html_tag_1;
@@ -4920,7 +4920,7 @@ function create_fragment(ctx) {
 	let b3;
 	let t17;
 	let t18;
-	let t19_value = /*data*/ ctx[1]["Expanded"]?.length + "";
+	let t19_value = /*data*/ ctx[1]["Expanded"]?.filter(unique).length + "";
 	let t19;
 	let t20;
 	let html_tag_2;
@@ -4931,7 +4931,7 @@ function create_fragment(ctx) {
 	let b4;
 	let t23;
 	let t24;
-	let t25_value = /*data*/ ctx[1]["Refactored"]?.length + "";
+	let t25_value = /*data*/ ctx[1]["Refactored"]?.filter(unique).length + "";
 	let t25;
 	let t26;
 	let html_tag_3;
@@ -4942,7 +4942,7 @@ function create_fragment(ctx) {
 	let b5;
 	let t29;
 	let t30;
-	let t31_value = /*data*/ ctx[1]["Tagged"]?.length + "";
+	let t31_value = /*data*/ ctx[1]["Tagged"]?.filter(unique).length + "";
 	let t31;
 	let t32;
 	let html_tag_4;
@@ -4953,7 +4953,7 @@ function create_fragment(ctx) {
 	let b6;
 	let t35;
 	let t36;
-	let t37_value = /*data*/ ctx[1]["Linked"]?.length + "";
+	let t37_value = /*data*/ ctx[1]["Linked"]?.filter(unique).length + "";
 	let t37;
 	let t38;
 	let html_tag_5;
@@ -4964,7 +4964,7 @@ function create_fragment(ctx) {
 	let b7;
 	let t41;
 	let t42;
-	let t43_value = /*data*/ ctx[1]["Removed Tags from"]?.length + "";
+	let t43_value = /*data*/ ctx[1]["Removed Tags from"]?.filter(unique).length + "";
 	let t43;
 	let t44;
 	let html_tag_6;
@@ -4975,7 +4975,7 @@ function create_fragment(ctx) {
 	let b8;
 	let t47;
 	let t48;
-	let t49_value = /*data*/ ctx[1]["Removed Links from"]?.length + "";
+	let t49_value = /*data*/ ctx[1]["Removed Links from"]?.filter(unique).length + "";
 	let t49;
 	let t50;
 	let html_tag_7;
@@ -5158,62 +5158,62 @@ function create_fragment(ctx) {
 				set_style(b0, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t2_value !== (t2_value = /*data*/ ctx[1]["Created"]?.length + "")) set_data(t2, t2_value);
+			if (dirty & /*data*/ 2 && t2_value !== (t2_value = /*data*/ ctx[1]["Created"]?.filter(unique).length + "")) set_data(t2, t2_value);
 
 			if (dirty & /*fillColor*/ 4) {
 				set_style(b1, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t7_value !== (t7_value = /*data*/ ctx[1]["Deleted"]?.length + "")) set_data(t7, t7_value);
+			if (dirty & /*data*/ 2 && t7_value !== (t7_value = /*data*/ ctx[1]["Deleted"]?.filter(unique).length + "")) set_data(t7, t7_value);
 			if (dirty & /*data, top*/ 3 && raw0_value !== (raw0_value = /*data*/ ctx[1]["Deleted"]?.filter(unique).slice(0, /*top*/ ctx[0]) + "")) html_tag.p(raw0_value);
 
 			if (dirty & /*fillColor*/ 4) {
 				set_style(b2, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t13_value !== (t13_value = /*data*/ ctx[1]["Renamed"]?.length + "")) set_data(t13, t13_value);
+			if (dirty & /*data*/ 2 && t13_value !== (t13_value = /*data*/ ctx[1]["Renamed"]?.filter(unique).length + "")) set_data(t13, t13_value);
 			if (dirty & /*data, top*/ 3 && raw1_value !== (raw1_value = /*data*/ ctx[1]["Renamed"]?.filter(unique).slice(0, /*top*/ ctx[0]) + "")) html_tag_1.p(raw1_value);
 
 			if (dirty & /*fillColor*/ 4) {
 				set_style(b3, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t19_value !== (t19_value = /*data*/ ctx[1]["Expanded"]?.length + "")) set_data(t19, t19_value);
+			if (dirty & /*data*/ 2 && t19_value !== (t19_value = /*data*/ ctx[1]["Expanded"]?.filter(unique).length + "")) set_data(t19, t19_value);
 			if (dirty & /*data, top*/ 3 && raw2_value !== (raw2_value = /*data*/ ctx[1]["Expanded"]?.filter(unique).slice(0, /*top*/ ctx[0]) + "")) html_tag_2.p(raw2_value);
 
 			if (dirty & /*fillColor*/ 4) {
 				set_style(b4, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t25_value !== (t25_value = /*data*/ ctx[1]["Refactored"]?.length + "")) set_data(t25, t25_value);
+			if (dirty & /*data*/ 2 && t25_value !== (t25_value = /*data*/ ctx[1]["Refactored"]?.filter(unique).length + "")) set_data(t25, t25_value);
 			if (dirty & /*data, top*/ 3 && raw3_value !== (raw3_value = /*data*/ ctx[1]["Refactored"]?.filter(unique).slice(0, /*top*/ ctx[0]) + "")) html_tag_3.p(raw3_value);
 
 			if (dirty & /*fillColor*/ 4) {
 				set_style(b5, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t31_value !== (t31_value = /*data*/ ctx[1]["Tagged"]?.length + "")) set_data(t31, t31_value);
+			if (dirty & /*data*/ 2 && t31_value !== (t31_value = /*data*/ ctx[1]["Tagged"]?.filter(unique).length + "")) set_data(t31, t31_value);
 			if (dirty & /*data, top*/ 3 && raw4_value !== (raw4_value = /*data*/ ctx[1]["Tagged"]?.filter(unique).slice(0, /*top*/ ctx[0]) + "")) html_tag_4.p(raw4_value);
 
 			if (dirty & /*fillColor*/ 4) {
 				set_style(b6, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t37_value !== (t37_value = /*data*/ ctx[1]["Linked"]?.length + "")) set_data(t37, t37_value);
+			if (dirty & /*data*/ 2 && t37_value !== (t37_value = /*data*/ ctx[1]["Linked"]?.filter(unique).length + "")) set_data(t37, t37_value);
 			if (dirty & /*data, top*/ 3 && raw5_value !== (raw5_value = /*data*/ ctx[1]["Linked"]?.filter(unique).slice(0, /*top*/ ctx[0]) + "")) html_tag_5.p(raw5_value);
 
 			if (dirty & /*fillColor*/ 4) {
 				set_style(b7, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t43_value !== (t43_value = /*data*/ ctx[1]["Removed Tags from"]?.length + "")) set_data(t43, t43_value);
+			if (dirty & /*data*/ 2 && t43_value !== (t43_value = /*data*/ ctx[1]["Removed Tags from"]?.filter(unique).length + "")) set_data(t43, t43_value);
 			if (dirty & /*data, top*/ 3 && raw6_value !== (raw6_value = /*data*/ ctx[1]["Removed Tags from"]?.filter(unique).slice(0, /*top*/ ctx[0]) + "")) html_tag_6.p(raw6_value);
 
 			if (dirty & /*fillColor*/ 4) {
 				set_style(b8, "color", /*fillColor*/ ctx[2]);
 			}
 
-			if (dirty & /*data*/ 2 && t49_value !== (t49_value = /*data*/ ctx[1]["Removed Links from"]?.length + "")) set_data(t49, t49_value);
+			if (dirty & /*data*/ 2 && t49_value !== (t49_value = /*data*/ ctx[1]["Removed Links from"]?.filter(unique).length + "")) set_data(t49, t49_value);
 			if (dirty & /*data, top*/ 3 && raw7_value !== (raw7_value = /*data*/ ctx[1]["Removed Links from"]?.filter(unique).slice(0, /*top*/ ctx[0]) + "")) html_tag_7.p(raw7_value);
 		},
 		i: noop,

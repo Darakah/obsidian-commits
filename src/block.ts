@@ -7,7 +7,6 @@ export class CommitTypesProcessor {
 
 	async run(source: string, el: HTMLElement, settings: CommitsSettings, args: string[]) {
 
-		source = source.trim()
 		let project = args[0] ? `${args[0]}` : "/"
 		let widthPar = parseInt(args[1]) ? parseInt(args[1]) : 400
 		let heightPar = parseInt(args[2]) ? parseInt(args[2]) : settings.height
@@ -59,7 +58,6 @@ export class CommitWeeklyProcessor {
 
 	async run(source: string, el: HTMLElement, settings: CommitsSettings, args: string[]) {
 
-		source = source.trim()
 		let project = args[0] ? `${args[0]}` : "/"
 		let widthPar = parseInt(args[1]) ? parseInt(args[1]) : 400
 		let heightPar = parseInt(args[2]) ? parseInt(args[2]) : settings.height
@@ -102,7 +100,6 @@ export class CommitDailyProcessor {
 
 	async run(source: string, el: HTMLElement, settings: CommitsSettings, args: string[]) {
 
-		source = source.trim()
 		let project = args[0] ? `${args[0]}` : "/"
 		let widthPar = parseInt(args[1]) ? parseInt(args[1]) : 400
 		let heightPar = parseInt(args[2]) ? parseInt(args[2]) : settings.height
@@ -145,8 +142,7 @@ export class CommitRecentsProcessor {
 
 	async run(source: string, el: HTMLElement, settings: CommitsSettings, args: string[]) {
 
-		source = source.trim()
-		let project = args[0].trim() ? args[0].trim() : "/"
+		let project = args[0]?.trim() ? args[0].trim() : "/"
 		let heightPar = parseInt(args[1]) ? parseInt(args[1]) : settings.height
 		let fillColor = args[2] ? args[2] : settings.plotFill
 		let top = args[3] ? args[3] : 3
