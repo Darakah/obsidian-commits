@@ -1,6 +1,6 @@
 # Obsidian Commits
-![GitHub release)](https://img.shields.io/github/v/release/Darakah/obsidian-word-cloud)
-![GitHub all releases](https://img.shields.io/github/downloads/Darakah/obsidian-word-cloud/total)
+![GitHub release)](https://img.shields.io/github/v/release/Darakah/obsidian-commits)
+![GitHub all releases](https://img.shields.io/github/downloads/Darakah/obsidian-commits/total)
 
 Track &amp; Review commits in obsidian vault or specified project. (Github like commit review)
 
