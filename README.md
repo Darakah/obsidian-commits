@@ -6,7 +6,7 @@ Track &amp; Review commits in obsidian vault or specified project. (Github like 
 
 ## Example
 
-<img src="https://raw.githubusercontent.com/Darakah/obsidian-commits/main/images/Example_1_2.png"/>
+<img src="https://raw.githubusercontent.com/Darakah/obsidian-commits/main/images/Example_1.png"/>
 
 ## Features
 - Track an obsidian vault / project's growth 
@@ -28,29 +28,25 @@ Track &amp; Review commits in obsidian vault or specified project. (Github like 
 ## Usage
 
 - To display a specific block use its corresponding block id: `commits-recents`, `commits-type`, `commits-weekly`, `commits-daily`
-- Each line represents a certain argument. Arguments are identified by with the following syntax: `argumentName`=`argumentValue` for e.g. to set div width: `divWidth=50` which sets the container width to 50% of the note width. 
-- Each argument must be on a separate line. 
-- Arguments can be in any order
-- Arguments that was not specified are set to default values
-- Arguments are: `project`, `topCommits`, `borderColor`, `gridColor`, `fillColor`, `divWidth`, `divHeight`  and `divAlign`
-- For the blocks `commits-type`, `commits-weekly`, `commits-daily`, parameters are the following:
+- For each block, each line represents a certain argument (Arguments are identified by the row number i.e. if you want to use a later argument YOU MUST LEAVE AN EMPTY LINE FOR PREVIOUS UNSET ARGUMENTS OTHERWISE IT WON'T WORK!)
+- For the blocks `commits-type`, `commits-weekly`, `commits-daily` and by order of lines the parameters are the following:
    * `Project Path`, by default only the whole vault is tracked and can be shown `/`. To track a new project use the settings tab of the plugin.
-   * `Div width in %` 
-   * `Height in Pixels`
+   * `Width in Pixels` of the image
+   * `Height in Pixels` of the image 
    * `Fill color`
-   * `Border color`
    * `Grid color`
    * `Div container alignment` i.e. `right` or `left`
+   * `Div width in %` 
 
 - For the block `commits-recents` parameters are:
    * `Project Path`, by default only the whole vault is tracked and can be shown `/`. To track a new project use the settings tab of the plugin.
-   * `Div width in %` 
-   * `Height in Pixels`
+   * `Height in Pixels` of the image 
    * `Fill color`
    * `Top number of recent commits to show for each category`
    * `Div container alignment` i.e. `right` or `left`
+   * `Div width in %` 
 
-<img src="https://raw.githubusercontent.com/Darakah/obsidian-commits/main/images/Example_2_2.png"/>
+<img src="https://raw.githubusercontent.com/Darakah/obsidian-commits/main/images/Example_2.png"/>
 
 ## Settings:
 <img src="https://raw.githubusercontent.com/Darakah/obsidian-commits/main/images/Settings_1.png"/>

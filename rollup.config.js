@@ -1,3 +1,4 @@
+import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import styles from "rollup-plugin-styles";
@@ -14,6 +15,10 @@ export default {
     plugins: [
         typescript({ sourceMap: env.env === "DEV" }),
         styles(),
+        resolve({
+            browser: true,
+            dedupe: ["svelte"],
+        }),
         commonjs({
             include: "node_modules/**",
         }),

@@ -1,18 +1,20 @@
-import type { App, Component, MarkdownPostProcessorContext } from 'obsidian';
-import { MarkdownRenderer } from 'obsidian';
-import { chooseRandomNote, randomBlock } from './utils';
-import type { SpotlightSettings } from './types';
+import { CommitsSettings, barChart, radarChart, unique } from './utils';
 
-export class SpotlightProcessor {
+export class CommitProcessor {
 
-	async run(Comp: Component, source: string, el: HTMLElement, ctx: MarkdownPostProcessorContext, app: App, settings: SpotlightSettings, block: boolean) {
+	async run(source: string, el: HTMLElement, settings: CommitsSettings, type: string) {
 
+		// read block arguments
 		let args = {
-			tags: '',
-			match: '.*',
+			project: "/",
+			topCommits: settings.topCommits,
+			borderColor: settings.borderColor,
+			gridColor: settings.gridColor,
+			fillColor: settings.fillColor,
 			divWidth: settings.divWidth,
 			divHeight: settings.divHeight,
-			divAlign: 'left'
+			divAlign: settings.divAlign,
+
 		};
 
 		source.split('\n').map(e => {
@@ -22,30 +24,90 @@ export class SpotlightProcessor {
 			}
 		});
 
-		let currentNote = ctx.sourcePath;
-		let randomNote = chooseRandomNote(app.vault.getMarkdownFiles(), args.tags.split(';'), app.metadataCache, args.match, currentNote, block, settings);
-
-		let elCanvas = el.createDiv({ cls: 'spotlight-container', attr: { id: 'container' } });
-		elCanvas.setAttribute('style', `width:${args.divWidth}%; height:${args.divHeight}px; float: ${args.divAlign};`);
-
-		if (!randomNote) {
-			elCanvas.setText('No note was found for the given search parameters!');
-			return;
-		}
-
-		let text = await app.vault.cachedRead(randomNote);
-
-		elCanvas.createEl('a', { cls: "internal-link", href: `${randomNote.path}` }).createEl('i', {
-			cls: 'fa fa-external-link spotlight-link',
-			attr: { 'aria-hidden': 'true', 'style': 'float: right; padding-top: 10px; color: var(--text-normal);' }
+		let container = el.createDiv({
+			cls: "commits-container",
+			attr: { 'style': `width:${args.divWidth}%; height: ${args.divHeight}px; float: ${args.divAlign};` }
 		});
 
-		if (block) {
-			let blocks = app.metadataCache.getFileCache(randomNote).blocks;
-			MarkdownRenderer.renderMarkdown(randomBlock(text, blocks), elCanvas, currentNote, Comp);
-			return;
+		if (type === 'type') {
+
+			let commitTypeData = settings.commitTypes[args.project];
+			if (!commitTypeData) {
+				container.setText(`${args.project} is not a tracked project!`);
+				return;
+			}
+
+			let totalCommits = commitTypeData['Create'] + commitTypeData['Expand'] +
+				commitTypeData['Refactor'] + commitTypeData['Link'];
+			let linkPerc = Math.round(commitTypeData['Link'] / totalCommits * 100);
+			let expandPerc = Math.round(commitTypeData['Expand'] / totalCommits * 100);
+			let refactorPerc = Math.round(commitTypeData['Refactor'] / totalCommits * 100);
+			let createPerc = Math.ceil(commitTypeData['Create'] / totalCommits * 100);
+
+			let labels = ['Create', 'Expand', 'Link', 'Refactor'];
+			let data = [createPerc, expandPerc, linkPerc, refactorPerc];
+
+			radarChart(labels, data, args.fillColor, args.borderColor, args.gridColor, container.createEl('canvas').getContext('2d'));
 		}
 
-		MarkdownRenderer.renderMarkdown(text, elCanvas, currentNote, Comp);
+		if (type === "weekly") {
+
+			let commitWeeklyData = settings.weeklyCommits[args.project];
+
+			if (!commitWeeklyData) {
+				container.setText(`${args.project} is not a tracked project!`);
+				return;
+			}
+
+			let labels = [];
+			let values = [];
+			Object.entries(commitWeeklyData).forEach(([key, value]) => {
+				labels.push(key);
+				values.push(value);
+			});
+
+			barChart(labels, values, args.fillColor, args.borderColor, args.gridColor, container.createEl('canvas').getContext('2d'));
+		}
+
+		if (type === "daily") {
+
+			let commitDailyData = settings.dailyCommits[args.project];
+
+			if (!commitDailyData) {
+				container.setText(`${args.project} is not a tracked project!`);
+				return;
+			}
+
+			let labels = [];
+			let values = [];
+			Object.entries(commitDailyData).forEach(([key, value]) => {
+				labels.push(key);
+				values.push(value);
+			});
+
+			barChart(labels, values, args.fillColor, args.borderColor, args.gridColor, container.createEl('canvas').getContext('2d'));
+		}
+
+		if (type === "recents") {
+
+			let commitRecentsData = settings.recentCommits[args.project];
+
+			if (!commitRecentsData) {
+				container.setText(`${args.project} is not a tracked project!`);
+				return;
+			}
+
+			container.createEl('b', { text: `Created `, attr: { 'style': `color: ${args.borderColor}` } });
+			container.createSpan().innerHTML = `${commitRecentsData["Created"]?.filter(unique).length} new note(s)`;
+			container.createEl('br');
+
+			let types = ['Deleted', 'Renamed', 'Expanded', 'Refactored', 'Tagged', 'Linked', 'Removed Tags from', 'Removed Links from'];
+			for (let type = 0; type < types.length; type++) {
+				container.createEl('b', { text: `${types[type]} `, attr: { 'style': `color: ${args.borderColor}` } });
+				container.createSpan().innerHTML = `${commitRecentsData[`${types[type]}`]?.filter(unique).length} note(s): 
+			${commitRecentsData[`${types[type]}`]?.filter(unique).slice(0, args.topCommits)}`;
+				container.createEl('br');
+			}
+		}
 	}
 }
