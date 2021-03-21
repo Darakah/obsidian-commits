@@ -1,7 +1,7 @@
 {
     "id": "obsidian-spotlight",
     "name": "Spotlight",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "minAppVersion": "0.10.11",
     "description": "Block that features random notes or block of a note from vault / in a specified project or with a certain combination of tags.",
     "author": "darakah",
