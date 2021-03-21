@@ -1,8 +1,5 @@
-import svelte from "rollup-plugin-svelte";
-import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
-import autoPreprocess from "svelte-preprocess";
 import styles from "rollup-plugin-styles";
 import { env } from "process";
 
@@ -15,16 +12,8 @@ export default {
     },
     external: ["obsidian", "fs", "os", "path"],
     plugins: [
-        svelte({
-            emitCss: false,
-            preprocess: autoPreprocess(),
-        }),
         typescript({ sourceMap: env.env === "DEV" }),
         styles(),
-        resolve({
-            browser: true,
-            dedupe: ["svelte"],
-        }),
         commonjs({
             include: "node_modules/**",
         }),

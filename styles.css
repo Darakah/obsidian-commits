@@ -1,9 +1,8 @@
-.commits-container {
+.spotlight-container {
+    overflow-y: auto;
     background-color: var(--color-bg-primary);
-    border: 1px solid transparent !important;
+    border: 1px solid var(--interactive-hover) !important;
     border-radius: 6px;
-    width: 49%;
-    height: 100%;
-    padding: 0px;
-    padding-right: 15px;
+    padding: 15px;
+    padding-top: 0px;
 }

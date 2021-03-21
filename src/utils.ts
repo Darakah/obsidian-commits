@@ -1,257 +1,98 @@
-import type { TFile, MetadataCache } from 'obsidian';
-import type { CommitsSettings } from './types'
-import { commitDay } from './constants'
-
-
-/**
- * Sorted array based on index
- */
-export const unique = (value, index, self) => {
-    return self.indexOf(value) === index
-}
+import type { TFile, MetadataCache, BlockCache } from 'obsidian';
+import { getAllTags } from 'obsidian';
+import type { SpotlightSettings } from './types';
 
 /**
- * Check if project path is valid (at least 1 md file contained)
- * @param projectPath - obsidian note file
- * @param vaultFiles - obsidian md file list
+ * Return boolean if all tags present in obsidian note
+ * @param file - obsidian note file
+ * @param tagList - list of tags
+ * @param metadataCache - vault metadata handler
  */
+export function FilterMDFilesByTags(file: TFile, tagList: string[], metadataCache: MetadataCache): boolean {
 
-export const isValidProject = (projectPath: string, vaultFiles: TFile[]): boolean => {
-    let reg = new RegExp(`^${projectPath}\/.*\.md$`)
-    for (let file in vaultFiles) {
-        if (vaultFiles[file].path.match(reg)) {
-            return true
-        }
+    if (!tagList) {
+        return true;
     }
+
+    let tags = getAllTags(metadataCache.getFileCache(file)).map(e => e.slice(1, e.length));
+
+    if (tags && tags.length > 0) {
+        return tagList.every(function (val) { return tags.indexOf(val) >= 0; });
+    }
+
     return false;
 }
 
-
 /**
- * Return size, # of tags & # of links for specified file
- * @param file - obsidian note file
- * @param metadataCache - obsidian metadata cache handler
+ * Return random number between min and max
+ * @param min - minimum possible number
+ * @param max - maximum possible number
  */
-export function getFileStats(file: TFile, metadataCache: MetadataCache): number[] {
-    return [file.stat.size, getTagCount(file, metadataCache), getLinkCount(file, metadataCache)]
+function randomNumber(min, max): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 /**
- * Return size, # of tags & # of links for specified file
- * @param fileList - obsidian note file list
- * @param metadataCache - obsidian metadata cache handler
- * @param settings - commits plugin settings
+ * Return random note based on tags, block presence and path match
+ * @param fileList - note md file list
+ * @param tagList - list of tags
+ * @param metadataCache - vault metadata handler
+ * @param match - path regex match
+ * @param currentPath - path of current note
+ * @param block - whether to consider blocks or note
  */
-export function updateFilesCheckpoint(fileList: TFile[], metadataCache: MetadataCache, settings: CommitsSettings): void {
-    for (let file = 0; file < fileList.length; file++) {
-        let fileSize = fileList[file].stat.size
-        let fileCheckpoint = settings.filesCheckpoint[fileList[file].path].size
-        let sizeChange = fileSize - fileCheckpoint
-        let newTagCount = getTagCount(fileList[file], metadataCache)
-        let newLinkCount = getLinkCount(fileList[file], metadataCache)
-        let tagChange = newTagCount - settings.filesCheckpoint[fileList[file].path].tags
-        let linkChange = newLinkCount - settings.filesCheckpoint[fileList[file].path].links
+export function chooseRandomNote(fileList: TFile[], tagList: string[], metadataCache: MetadataCache, match: string, currentPath: string, block: boolean, settings: SpotlightSettings): TFile {
 
-        if (fileSize > settings.commitThreshold && sizeChange > (settings.commitPerc / 100 * fileCheckpoint)) {
-            updateProjects(fileList[file].path, settings, 'Expand', 'Expanded', fileList[file].name)
-            settings.filesCheckpoint[fileList[file].path].size = fileList[file].stat.size
-        }
-
-        if (fileSize > settings.commitThreshold && sizeChange < (-settings.commitPerc / 100 * fileCheckpoint)) {
-            updateProjects(fileList[file].path, settings, 'Refactor', 'Refactored', fileList[file].name)
-            settings.filesCheckpoint[fileList[file].path].size = fileList[file].stat.size
-        }
-
-        if (tagChange > 0) {
-            updateProjects(fileList[file].path, settings, 'Link', 'Tagged', fileList[file].name)
-            settings.filesCheckpoint[fileList[file].path].tags = newTagCount
-        }
-
-        if (tagChange < 0) {
-            updateProjects(fileList[file].path, settings, 'Refactor', 'Removed Tags from', fileList[file].name)
-            settings.filesCheckpoint[fileList[file].path].tags = newTagCount
-        }
-
-        if (linkChange > 0) {
-            updateProjects(fileList[file].path, settings, 'Link', 'Linked', fileList[file].name)
-            settings.filesCheckpoint[fileList[file].path].links = newLinkCount
-        }
-
-        if (linkChange < 0) {
-            updateProjects(fileList[file].path, settings, 'Refactor', 'Removed Links from', fileList[file].name)
-            settings.filesCheckpoint[fileList[file].path].links = newLinkCount
+    // Remove "" from tag list if present
+    if (tagList.contains("")) {
+        if (tagList.length === 1) {
+            tagList = null;
+        } else {
+            tagList = tagList.splice(tagList.indexOf(""), 1);
         }
     }
+
+    let regex;
+    // Catch errors such as '.**' caused by bad regex expressions
+    try {
+        regex = new RegExp(match);
+    } catch (error) {
+        regex = ".*";
+    }
+
+    let fileFiltered = fileList.filter(file => file.path.match(regex) &&
+        FilterMDFilesByTags(file, tagList, metadataCache) &&
+        (!block || metadataCache.getFileCache(file).blocks) &&
+        !settings.ignoreList.contains(file.path));
+
+    let rand = randomNumber(0, fileFiltered.length - 1);
+
+    if (fileFiltered.length === 0) {
+        return null;
+    }
+
+    if (fileFiltered[rand].path == currentPath && fileFiltered.length == 1) {
+        return null;
+    }
+
+    while (fileFiltered[rand].path == currentPath) {
+        rand = randomNumber(0, fileFiltered.length - 1);
+    }
+
+    return fileFiltered[rand];
 }
 
 /**
- * Return TFile for specified file path
- * @param markdownFiles - obsidian markdown TFile list
- * @param path - obsidian note path as string
+ * Return random block from note
+ * @param text - note full text
+ * @param blocks - note metadata cache blocks
  */
-export function getTFilebyPath(markdownFiles: TFile[], path: string): TFile {
-    for (let i = 0; i < markdownFiles.length; i++) {
-        if (markdownFiles[i].path.match(path)) {
-            return markdownFiles[i]
-        }
-    }
-    return null
-}
+export function randomBlock(text: string, blocks: Record<string, BlockCache>): string {
+    let blockKeys = Object.keys(blocks);
+    let rand = randomNumber(0, blockKeys.length - 1);
+    let pos = blocks[blockKeys[rand]].position;
 
-/**
- * Return count of tags for specified file
- * @param file - obsidian note file
- * @param metadataCache - obsidian metadata cache handler
- */
-export function getTagCount(file: TFile, metadataCache: MetadataCache): number {
-    let fileCache = metadataCache.getFileCache(file);
-    let tags = [];
-
-    if (fileCache && fileCache.tags) {
-        tags = fileCache.tags.map(i => i.tag.substring(1,))
-    }
-
-    if (fileCache && fileCache.frontmatter && fileCache.frontmatter.tags) {
-        tags = fileCache.frontmatter.tags.concat(tags)
-    }
-
-    return tags.filter(unique).length;
-}
-
-
-/**
- * Return count of links for specified file
- * @param file - obsidian note file
- * @param metadataCache - obsidian metadata cache handler
- */
-export function getLinkCount(file: TFile, metadataCache: MetadataCache): number {
-    let fileCache = metadataCache.getFileCache(file);
-    let links = [];
-
-    if (fileCache && fileCache.links) {
-        fileCache.links.forEach(e => {
-            links.push(e.link)
-        })
-    }
-
-    if (fileCache && fileCache.embeds) {
-        fileCache.embeds.forEach(e => {
-            links.push(e.link)
-        })
-    }
-
-    return links.filter(unique).length;
-}
-
-/**
- * Initialize files checkpoint 
- * @param fileList - obsidian markdown file list
- * @param metadataCache - obsidian metadata cache handler
- * @param settings - commits settings 
- */
-
-export function initializeFilesCheckpoint(fileList: TFile[], metadataCache: MetadataCache, settings: CommitsSettings): void {
-
-    for (let file = 0; file < fileList.length; file++) {
-        let fileStats = getFileStats(fileList[file], metadataCache)
-        settings.filesCheckpoint[fileList[file].path] = { size: fileStats[0], tags: fileStats[1], links: fileStats[2] }
-    }
-
-    settings.commitTypes['/'] = {
-        'Refactor': 0,
-        'Create': 0,
-        'Link': 0,
-        'Expand': 0
-    }
-    settings.dailyCommits['/'] = {
-        '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0,
-        '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 0, '20': 0, '21': 0, '22': 0, '23': 0
-    }
-    settings.weeklyCommits['/'] = {
-        'Mon': 0, 'Tue': 0, 'Wed': 0, 'Thu': 0, 'Fri': 0, 'Sat': 0, 'Sun': 0
-    }
-    settings.recentCommits['/'] = {
-        'Expanded': [],
-        'Created': [],
-        'Renamed': [],
-        'Tagged': [],
-        'Refactored': [],
-        'Deleted': [],
-        'Linked': [],
-        'Removed Tags from': [],
-        'Removed Links from': []
-    }
-}
-
-/**
- * Add project to tracked list and intialize its stats 
- * @param path - relative vault path
- * @param settings - commits settings 
- */
-
-export function trackProject(path: string, settings: CommitsSettings): void {
-    settings.trackedProjects.push(path)
-    settings.commitTypes[path] = {
-        'Refactor': 0,
-        'Create': 0,
-        'Link': 0,
-        'Expand': 0
-    }
-    settings.dailyCommits[path] = {
-        '0': 0, '1': 0, '2': 0, '3': 0, '4': 0, '5': 0, '6': 0, '7': 0, '8': 0, '9': 0, '10': 0, '11': 0,
-        '12': 0, '13': 0, '14': 0, '15': 0, '16': 0, '17': 0, '18': 0, '19': 0, '20': 0, '21': 0, '22': 0, '23': 0
-    }
-    settings.weeklyCommits[path] = {
-        'Mon': 0, 'Tue': 0, 'Wed': 0, 'Thu': 0, 'Fri': 0, 'Sat': 0, 'Sun': 0
-    }
-    settings.recentCommits[path] = {
-        'Expanded': [],
-        'Created': [],
-        'Renamed': [],
-        'Tagged': [],
-        'Refactored': [],
-        'Deleted': [],
-        'Linked': [],
-        'Removed Tags from': [],
-        'Removed Links from': []
-    }
-}
-
-/**
- * Remove project from tracked list & remove its commit data
- * @param path - relative vault path
- * @param settings - commits settings 
- */
-
-export function removeProject(path: string, settings: CommitsSettings): void {
-    settings.trackedProjects.splice(settings.trackedProjects.indexOf(path), 1)
-    delete settings.commitTypes[path]
-    delete settings.dailyCommits[path]
-    delete settings.weeklyCommits[path]
-    delete settings.recentCommits[path]
-}
-
-export function updateProjects(filePath: string, settings: CommitsSettings, commitType: string, commitAction: string, fileTitle: string): void {
-    let date = new Date();
-
-    for (let project = 0; project < settings.trackedProjects.length; project++) {
-        let reg = new RegExp(`^${settings.trackedProjects[project]}\/.*\.md$`)
-        if (settings.trackedProjects[project] === '/') {
-            reg = new RegExp(`^.*\.md$`)
-        }
-
-        if (filePath.match(reg)) {
-            // Increment that commit type
-            settings.commitTypes[settings.trackedProjects[project]][commitType] += 1
-            let commitHistory = settings.recentCommits[settings.trackedProjects[project]][commitAction]
-            if (commitHistory.length > 50) {
-                commitHistory.pop()
-                commitHistory.unshift(`<a class="internal-link" href="${filePath}"> ${fileTitle.slice(0, fileTitle.length - 3)} </a>`)
-            } else {
-                commitHistory.push(`<a class="internal-link" href="${filePath}"> ${fileTitle.slice(0, fileTitle.length - 3)} </a>`)
-            }
-            settings.dailyCommits[settings.trackedProjects[project]][`${date.getHours()}`] += 1
-            settings.weeklyCommits[settings.trackedProjects[project]][commitDay[`${date.getDay()}`]] += 1
-        }
-    }
+    return text.slice(pos.start.offset, pos.end.offset);
 }
