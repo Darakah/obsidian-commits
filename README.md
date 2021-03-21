@@ -31,7 +31,7 @@ Track &amp; Review commits in obsidian vault or specified project. (Github like 
 - Each line represents a certain argument. Arguments are identified by with the following syntax: `argumentName`=`argumentValue` for e.g. to set div width: `divWidth=50` which sets the container width to 50% of the note width. 
 - Each argument must be on a separate line. 
 - Arguments can be in any order
-- Arguments that was not specified are set to default values
+- Arguments that are not specified are set to default values
 - Arguments are: `project`, `topCommits`, `borderColor`, `gridColor`, `fillColor`, `divWidth`, `divHeight`  and `divAlign`
 - For the blocks `commits-type`, `commits-weekly`, `commits-daily`, parameters are the following:
    * `Project Path`, by default only the whole vault is tracked and can be shown `/`. To track a new project use the settings tab of the plugin.
