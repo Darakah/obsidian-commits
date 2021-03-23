@@ -1,6 +1,6 @@
-import { Plugin, TAbstractFile } from 'obsidian';
+import { Plugin, TAbstractFile, TFile } from 'obsidian';
 import { CommitProcessor } from './block';
-import { updateProjects, initializeFilesCheckpoint, getFileStats, getTFilebyPath, updateFilesCheckpoint, SETTINGS, CommitsSettings } from './utils';
+import { updateProjects, initializeFilesCheckpoint, getFileStats, updateFilesCheckpoint, SETTINGS, CommitsSettings } from './utils';
 import { CommitsSettingTab } from './settings';
 
 export default class CommitsPlugin extends Plugin {
@@ -36,14 +36,10 @@ export default class CommitsPlugin extends Plugin {
 			await proc.run(source, el, this.settings, 'recents');
 		});
 
-		this.commitsDelete = this.commitsDelete.bind(this);
-		this.commitsRename = this.commitsRename.bind(this);
-		this.commitsCreate = this.commitsCreate.bind(this);
-		this.initialize = this.initialize.bind(this);
-		this.registerEvent(this.app.workspace.on("layout-ready", this.initialize));
-		this.registerEvent(this.app.vault.on("delete", this.commitsDelete));
-		this.registerEvent(this.app.vault.on("rename", this.commitsRename));
-		this.registerEvent(this.app.vault.on('create', this.commitsCreate));
+		this.registerEvent(this.app.workspace.on("layout-ready", this.initialize.bind(this)));
+		this.registerEvent(this.app.vault.on("delete", this.commitsDelete.bind(this)));
+		this.registerEvent(this.app.vault.on("rename", this.commitsRename.bind(this)));
+		this.registerEvent(this.app.vault.on('create', this.commitsCreate.bind(this)));
 
 		// Update all tracked projects
 		setInterval(() => {
@@ -67,11 +63,10 @@ export default class CommitsPlugin extends Plugin {
 	}
 
 	async commitsCreate(file: TAbstractFile) {
-		let Tfile = getTFilebyPath(this.app.vault.getMarkdownFiles(), file.path);
 
-		if (this.settings.initialized && Tfile && !this.settings.filesCheckpoint[file.path]) {
+		if (this.settings.initialized && file instanceof TFile && file.extension === 'md' && !this.settings.filesCheckpoint[file.path]) {
 			// Add file to files Checkpoint
-			let fileStats = getFileStats(Tfile, this.app.metadataCache);
+			let fileStats = getFileStats(file, this.app.metadataCache);
 			this.settings.filesCheckpoint[file.path] = { size: fileStats[0], tags: fileStats[1], links: fileStats[2] };
 			// Register a creation commit
 			updateProjects(file.path, this.settings, 'Create', 'Created', file.name);

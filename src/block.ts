@@ -44,7 +44,7 @@ export class CommitProcessor {
 			let refactorPerc = Math.round(commitTypeData['Refactor'] / totalCommits * 100);
 			let createPerc = Math.ceil(commitTypeData['Create'] / totalCommits * 100);
 
-			let labels = ['Create', 'Expand', 'Refactor', 'Link' ];
+			let labels = ['Create', 'Expand', 'Refactor', 'Link'];
 			let data = [createPerc, expandPerc, refactorPerc, linkPerc];
 
 			radarChart(labels, data, args.fillColor, args.borderColor, args.gridColor, container.createEl('canvas').getContext('2d'));
@@ -98,16 +98,16 @@ export class CommitProcessor {
 			}
 
 			container.createEl('b', { text: `Created `, attr: { 'style': `color: ${args.borderColor}` } });
-			container.createSpan().innerHTML = `${commitRecentsData["Created"]?.filter(unique).length} new note(s)`;
+			container.createSpan().innerHTML = `${commitRecentsData["Created"]?.length} new note(s)`;
 			container.createEl('br');
 
 			let types = ['Deleted', 'Renamed', 'Expanded', 'Refactored', 'Tagged', 'Linked', 'Removed Tags from', 'Removed Links from'];
-			for (let type = 0; type < types.length; type++) {
-				container.createEl('b', { text: `${types[type]} `, attr: { 'style': `color: ${args.borderColor}` } });
-				container.createSpan().innerHTML = `${commitRecentsData[`${types[type]}`]?.filter(unique).length} note(s): 
-			${commitRecentsData[`${types[type]}`]?.filter(unique).slice(0, args.topCommits)}`;
+			types.forEach(type => {
+				container.createEl('b', { text: `${type} `, attr: { 'style': `color: ${args.borderColor}` } });
+				container.createSpan().innerHTML = `${commitRecentsData[`${type}`]?.filter(unique).length} note(s): 
+			${commitRecentsData[`${type}`]?.filter(unique).reverse().slice(0, args.topCommits)}`;
 				container.createEl('br');
-			}
+			});
 		}
 	}
 }
