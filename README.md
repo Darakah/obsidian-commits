@@ -58,6 +58,9 @@ Track &amp; Review commits in obsidian vault or specified project. (Github like 
 
 ## Release Notes
 
+### v0.2.2
+- Code improvements & optimization
+
 ### v0.1.2
 - Initial release
 
